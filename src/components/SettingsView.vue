@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import * as api from '../api'
+import { extractErrorMessage } from '../api'
 import NcButton from '@nextcloud/vue/components/NcButton'
 import NcTextField from '@nextcloud/vue/components/NcTextField'
 import { generateFilePath } from '@nextcloud/router'
@@ -64,7 +65,7 @@ const save = async (): Promise<void> => {
 		apiKey.value = ''
 		emit('saved')
 	} catch (err) {
-		error.value = err instanceof Error ? err.message : 'Failed to save settings'
+		error.value = extractErrorMessage(err, 'Failed to save settings')
 	} finally {
 		loading.value = false
 	}
@@ -80,7 +81,7 @@ const remove = async (): Promise<void> => {
 		apiKey.value = ''
 		emit('saved')
 	} catch (err) {
-		error.value = err instanceof Error ? err.message : 'Failed to remove API key'
+		error.value = extractErrorMessage(err, 'Failed to remove API key')
 	} finally {
 		loading.value = false
 	}

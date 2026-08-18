@@ -2,6 +2,7 @@
 import { computed, ref, watch } from 'vue'
 import type { TmdbResult } from '../api'
 import * as api from '../api'
+import { extractErrorMessage } from '../api'
 import { STATUS_LABELS, STATUSES } from '../utils'
 import NcButton from '@nextcloud/vue/components/NcButton'
 import NcLoadingIcon from '@nextcloud/vue/components/NcLoadingIcon'
@@ -68,7 +69,7 @@ const doSearch = async (): Promise<void> => {
 			searchError.value = 'No results found. Try a different title or add it manually.'
 		}
 	} catch (error) {
-		searchError.value = error instanceof Error ? error.message : 'Search failed'
+		searchError.value = extractErrorMessage(error, 'Search failed')
 	} finally {
 		searching.value = false
 	}
@@ -105,7 +106,7 @@ const addFromTmdb = async (result: TmdbResult): Promise<void> => {
 		emit('added')
 		emit('update:open', false)
 	} catch (error) {
-		searchError.value = error instanceof Error ? error.message : 'Failed to add title'
+		searchError.value = extractErrorMessage(error, 'Failed to add title')
 	} finally {
 		addingId.value = null
 	}
@@ -126,7 +127,7 @@ const addManually = async (): Promise<void> => {
 		emit('added')
 		emit('update:open', false)
 	} catch (error) {
-		searchError.value = error instanceof Error ? error.message : 'Failed to add title'
+		searchError.value = extractErrorMessage(error, 'Failed to add title')
 	}
 }
 

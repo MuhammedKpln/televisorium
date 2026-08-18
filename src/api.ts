@@ -1,5 +1,7 @@
-import axios from '@nextcloud/axios'
+import axios, { isAxiosError } from '@nextcloud/axios'
 import { generateOcsUrl } from '@nextcloud/router'
+
+axios.defaults.headers.common['OCS-APIRequest'] = 'true'
 
 export interface Episode {
 	id: number
@@ -60,11 +62,32 @@ export interface TmdbSeasonEpisode {
 	episode_number: number
 	title: string | null
 	runtime: number | null
+	tmdb_id?: number
 }
 
 const ocs = (path: string): string => generateOcsUrl(`/apps/televisorium${path}`)
 
-const data = <T>(response: { data: { ocs?: { data: T } } }): T => response.data.ocs?.data as T
+const data = <T>(response: { data: unknown }): T => {
+	const payload = response.data
+	if (payload !== null && typeof payload === 'object' && 'ocs' in payload) {
+		const ocsData = (payload as { ocs?: { data?: unknown } }).ocs?.data
+		if (ocsData !== undefined) {
+			return ocsData as T
+		}
+	}
+	return payload as T
+}
+
+export const extractErrorMessage = (error: unknown, fallback: string): string => {
+	if (isAxiosError(error)) {
+		const body = error.response?.data as { message?: string, ocs?: { meta?: { message?: string }, data?: { message?: string } } } | undefined
+		const message = body?.ocs?.meta?.message ?? body?.ocs?.data?.message ?? body?.message
+		if (typeof message === 'string' && message !== '') {
+			return message
+		}
+	}
+	return error instanceof Error && error.message !== '' ? error.message : fallback
+}
 
 export const listItems = async (params: { type?: string, status?: string, search?: string } = {}): Promise<Item[]> => {
 	const response = await axios.get(ocs('/items'), { params })
