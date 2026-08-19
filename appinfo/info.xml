@@ -5,7 +5,7 @@
 	<name>Televisorium</name>
 	<summary>An app to keep track on your watchlist, tv series, movies. Similiar to trakt.tv</summary>
 	<description>An app to keep track on your watchlist, tv series, movies. Similiar to trakt.tv</description>
-	<version>1.1.0</version>
+	<version>1.1.1</version>
 	<licence>AGPL-3.0-or-later</licence>
 	<author mail="mmuhammedkaplan0@gmail.com" homepage="https://github.com/muhammedkpln">Muhammed Kaplan</author>
 	<namespace>Televisorium</namespace>
